@@ -1,0 +1,632 @@
+############
+## SERIES ##
+############
+
+# Parameters needed for kinematics event detection in FA
+- parameter: PelvisCGPos_vel
+  steps:
+    - vector: [Hips_model.x, Hips_model.y, Hips_model.z]
+      space: VirtualLab
+    - convert:
+      from: mm
+      to: m
+      export: PelvisCGPos
+    - velocity:
+
+- parameter: LFT_DistEndAcc
+  set: left
+  steps:
+    - segment: LeftToeBase_model
+      space: VirtualLab
+    - convert:
+      from: mm
+      to: m
+    - lowpass:
+      extrapolate: 100
+      cutoff: 9
+      export: LFT_DistEndPos
+    - velocity:
+    # - lowpass:
+    #   extrapolate: 100
+    #   cutoff: 16
+      export: LFT_DistEndVel
+    - velocity:
+
+- parameter: RFT_DistEndAcc
+  set: right
+  steps:
+    - segment: RightToeBase_model
+      space: VirtualLab
+    - convert:
+      from: mm
+      to: m
+    - lowpass:
+      extrapolate: 100
+      cutoff: 9
+      export: RFT_DistEndPos
+    - velocity:
+    # - lowpass:
+    #   extrapolate: 100
+    #   cutoff: 16
+      export: RFT_DistEndVel
+    - velocity:
+
+# ####
+# Timeseries used in all FA tasks and in Running, Cycling and Generic
+# ####
+
+# ----
+# Kinematics ---
+# ----
+- parameter: KinematicsLowpassCutoffFq
+  steps:
+    - import: [15]
+
+- parameter: KinematicsLowpassExtrapolate
+  steps:
+    - import: [50]
+
+# --- Pelvis ---
+
+- parameter: Left Pelvic Angles
+  set: left
+  steps:
+    - jointAngle: Hips_model
+      space: VirtualLab
+    - multiply: [$prev, [-1, 1, -1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Right Pelvic Angles
+  set: right
+  steps:
+    - jointAngle: Hips_model
+      space: VirtualLab
+    - multiply: [$prev, [-1, -1, 1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+# --- Hips ---
+
+- parameter: Left Hip Angles
+  set: left
+  steps:
+    - jointAngle: [Hips_model, LeftUpLeg_model]
+    - multiply: [$prev, [1, -1, -1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Right Hip Angles
+  set: right
+  steps:
+    - jointAngle: [Hips_model, RightUpLeg_model]
+    - multiply: [$prev, [1, 1, 1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+# --- Knee ---
+
+- parameter: Left Knee Angles
+  set: left
+  steps:
+    - jointAngle: [LeftUpLeg_model, LeftLeg_model]
+    - multiply: [$prev, [-1, -1, -1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Right Knee Angles
+  set: right
+  steps:
+    - jointAngle: [RightUpLeg_model, RightLeg_model]
+    - multiply: [$prev, [-1, 1, 1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+# --- Ankle ---
+
+- parameter: Left Ankle Angles
+  set: left
+  steps:
+    - jointAngle: [LeftLeg_model, LeftFoot_model]
+    - multiply: [$prev, [1, -1, -1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Right Ankle Angles
+  set: right
+  steps:
+    - jointAngle: [RightLeg_model, RightFoot_model]
+    - multiply: [$prev, [1, 1, 1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Left Foot Progression
+  set: left
+  steps:
+    - jointAngle: LeftFoot_model
+      space: VirtualLab
+    - multiply: [$prev, [1, 1, -1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Right Foot Progression
+  set: right
+  steps:
+    - jointAngle: RightFoot_model
+      space: VirtualLab
+    - multiply: [$prev, [1, 1, 1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Left Foot Pitch Angles
+  set: left
+  steps:
+    - jointAngle: LeftFoot_model
+      space: VirtualLab
+    - multiply: [$prev, [1, 1, -1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Right Foot Pitch Angles
+  set: right
+  steps:
+    - jointAngle: RightFoot_model
+      space: VirtualLab
+    - multiply: [$prev, [1, 1, 1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+# --- Upper body ---
+
+# Thorax
+- parameter: Left Thorax_Lab Angles
+  set: left
+  steps:
+    - jointAngle: Spine2_model
+      space: VirtualLab
+    - multiply: [$prev, [-1,1,-1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Right Thorax_Lab Angles
+  set: right
+  steps:
+    - jointAngle: Spine2_model
+      space: VirtualLab
+    - multiply: [$prev, [-1,-1,1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Left Thorax Angles
+  set: left
+  steps:
+    - jointAngle: [Hips_model, Spine2_model]
+    - multiply: [$prev, [-1, 1, -1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Right Thorax Angles
+  set: right
+  steps:
+    - jointAngle: [Hips_model, Spine2_model]
+    - multiply: [$prev, [-1, -1, 1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+# Shoulder girdles
+- parameter: Left Shoulder Girdle Angles
+  set: left
+  steps:
+    - angle: [Spine2, LeftShoulder]
+      unwrap: true
+      rotationOrder: XYZ 
+    - multiply: [$prev, [1, 1, -1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Right Shoulder Girdle Angles
+  set: right
+  steps:
+    - angle: [Spine2, RightShoulder]
+      unwrap: true
+      rotationOrder: XYZ
+    - multiply: [$prev, [1, -1, 1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate      
+
+# Shoulders
+- parameter: Left Shoulder Angles
+  set: left
+  steps:
+    - angle: [Spine2_model, LeftArm_model]
+      unwrap: true
+      rotationOrder: YXZ #based on Vandana,P. at al. Comparison of Glenohumeral Motion Using Different Rotation Sequences, J Biomech. 2011 Feb 24; 44(4): 700–705. 
+    - multiply: [$prev, [1, -1, -1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Right Shoulder Angles
+  set: right
+  steps:
+    - angle: [Spine2_model, RightArm_model]
+      unwrap: true
+      rotationOrder: YXZ
+    - multiply: [$prev, [1, 1, 1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Left Shoulder Ang Vel
+  set: left
+  steps:
+    - angularVelocity: [LeftShoulder_model, LeftArm_model, LeftShoulder_model, LeftArm_model]
+
+- parameter: Right Shoulder Ang Vel
+  set: right
+  steps:
+    - angularVelocity: [RightShoulder_model, RightArm_model, RightShoulder_model, RightArm_model]
+
+# --- Arms ---
+
+- parameter: Left Elbow Angles
+  set: left
+  steps:
+    - angle: [LeftArm_model, LeftForeArm_model]
+    - multiply: [$prev, [1, 1, -1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Right Elbow Angles
+  set: right
+  steps:
+    - angle: [RightArm_model, RightForeArm_model]
+    - multiply: [$prev, [1, 1, 1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+# --- Wrist ---
+
+- parameter: Left Wrist Angles
+  set: left
+  steps:
+    - angle: [LeftForeArm_model, LeftHand_model]
+    - multiply: [$prev, [1, -1, 1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+- parameter: Right Wrist Angles
+  set: right
+  steps:
+    - angle: [RightForeArm_model, RightHand_model]
+    - multiply: [$prev, [1, 1, -1]]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+
+# --- Head ---
+
+- parameter: Head Angles
+  steps:
+    - angle: [Head_model, Spine2_model]
+    - lowpass:
+      cutoff: KinematicsLowpassCutoffFq
+      extrapolate: KinematicsLowpassExtrapolate
+    - multiply: [$prev, [1, -1, -1]] # in cycling we use this convention
+
+# COM distance to knee and ankle
+# for now using pelvis COM instead of body COM
+- parameter: Left_Knee_COM_distance
+  set: left
+  steps:
+    - segment: LeftLeg_model => knee
+      space: VirtualLab
+    - segment: Hips_model => pelvis
+      space: VirtualLab
+    - subtract: [pelvis, knee]
+    - convert: 
+      from: mm
+      to: m
+
+- parameter: Right_Knee_COM_distance
+  set: right
+  steps:
+    - segment: RightLeg_model => knee
+      space: VirtualLab
+    - segment: Hips_model => pelvis
+      space: VirtualLab
+    - subtract: [pelvis, knee]
+    - convert: 
+      from: mm
+      to: m
+    - multiply: [$prev,[-1,1,1]] #Invert right signal to make lateral movement positive
+
+- parameter: Left_Ankle_COM_distance
+  set: left
+  steps:
+    - segment: LeftFoot_model => foot
+      space: VirtualLab
+    - segment: Hips_model => pelvis
+      space: VirtualLab
+    - subtract: [pelvis, foot]
+    - convert: 
+      from: mm
+      to: m
+
+- parameter: Right_Ankle_COM_distance
+  set: right
+  steps:
+    - segment: RightFoot_model => foot
+      space: VirtualLab
+    - segment: Hips_model => pelvis
+      space: VirtualLab
+    - subtract: [pelvis, foot]
+    - convert: 
+      from: mm
+      to: m
+    - multiply: [$prev,[-1,1,1]] #Invert right signal to make lateral movement positive
+
+# ----
+# Kinetics
+# ----
+- parameter: BodyWeightNewton
+  steps:
+    - multiply: [$bodyMass, 9.81]
+
+# Dummy value to skip kinetics calculation
+# For CMJ_B/DJ_B (bilateral): skip kinetics unless BOTH force plates exist
+- parameter: skip_kinetics_calculation
+  where:
+    name: ^(CMJ_B|DJ_B)*
+  steps:
+    - if: (exists(ForcePlate1) && exists(ForcePlate2))
+      then: [0]
+      else: [1]
+
+# For all other measurements (including CMJ_L, CMJ_R, DJ_L, DJ_R): don't skip kinetics
+- parameter: skip_kinetics_calculation
+  where:
+    name: ^(?!(CMJ_B|DJ_B))*
+  steps:
+    - import: [0]
+
+# Left
+- parameter: Left GRF
+  where:
+    force: left
+  set: left
+  steps:
+    - import: LeftFootContact => foot
+    - vector: [foot.fx, foot.fy, foot.fz]
+      space: VirtualLab
+    - divide: [$prev, BodyWeightNewton]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Left Hip Moment
+  where:
+    force: left
+  set: left
+  steps:
+    - vector: [LeftHip.mx, LeftHip.my, LeftHip.mz]
+    - divide: [$prev, $bodyMass]
+    - multiply: [$prev,[-1,1,1]]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Left Hip Power
+  where:
+    force: left
+  set: left
+  steps:
+    - vector: [LeftHip.p, LeftHip.p, LeftHip.p] #for compatibility with V3D power requires components
+    - divide: [$prev, $bodyMass]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Left Knee Moment
+  where:
+    force: left
+  set: left
+  steps:
+    - vector: [LeftKnee.mx, LeftKnee.my, LeftKnee.mz]
+    - divide: [$prev, $bodyMass]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Left Knee Power
+  where:
+    force: left
+  set: left
+  steps:
+    - vector: [LeftKnee.p, LeftKnee.p, LeftKnee.p] #for compatibility with V3D power requires components
+    - divide: [$prev, $bodyMass]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Left Ankle Moment
+  where:
+    force: left
+  set: left
+  steps:
+    - vector: [LeftAnkle.mx, LeftAnkle.my, LeftAnkle.mz]
+    - divide: [$prev, $bodyMass]
+    - multiply: [$prev,[-1,1,1]]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Left Ankle Power
+  where:
+    force: left
+  set: left
+  steps:
+    - vector: [LeftAnkle.p, LeftAnkle.p, LeftAnkle.p] #for compatibility with V3D power requires components
+    - divide: [$prev, $bodyMass]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Left_COP
+  where:
+    force: left
+  set: left
+  steps:
+    - import: LeftFootContact => foot
+    - vector: [foot.x, foot.y, foot.z]
+    - convert:
+      from: mm
+      to: m
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Left_COP_COM_distance
+  where:
+    force: left
+  set: left
+  steps:
+    - import: Left_COP
+      space: VirtualLab
+    - subtract: [PelvisCGPos, $prev]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+# Right
+- parameter: Right GRF
+  where:
+    force: right
+  set: right
+  steps:
+    - import: RightFootContact => foot
+    - vector: [foot.fx, foot.fy, foot.fz]
+      space: VirtualLab
+    - divide: [$prev, BodyWeightNewton]
+    - multiply: [$prev, [-1,1,1]]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Right Hip Moment
+  where:
+    force: right
+  set: right
+  steps:
+    - vector: [RightHip.mx, RightHip.my, RightHip.mz]
+    - divide: [$prev, $bodyMass]
+    - multiply: [$prev,[-1,-1,-1]]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Right Hip Power
+  where:
+    force: right
+  set: right
+  steps:
+    - vector: [RightHip.p, RightHip.p, RightHip.p] #for compatibility with V3D power requires components
+    - divide: [$prev, $bodyMass]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Right Knee Moment
+  where:
+    force: right
+  set: right
+  steps:
+    - vector: [RightKnee.mx, RightKnee.my, RightKnee.mz]
+    - divide: [$prev, $bodyMass]
+    - multiply: [$prev,[1,-1,-1]]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Right Knee Power
+  where:
+    force: right
+  set: right
+  steps:
+    - vector: [RightKnee.p, RightKnee.p, RightKnee.p] #for compatibility with V3D power requires components
+    - divide: [$prev, $bodyMass]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Right Ankle Moment
+  where:
+    force: right
+  set: right
+  steps:
+    - vector: [RightAnkle.mx, RightAnkle.my, RightAnkle.mz]
+    - divide: [$prev, $bodyMass]
+    - multiply: [$prev,[-1,-1,-1]]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Right Ankle Power
+  where:
+    force: right
+  set: right
+  steps:
+    - vector: [RightAnkle.p, RightAnkle.p, RightAnkle.p] #for compatibility with V3D power requires components
+    - divide: [$prev, $bodyMass]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Right_COP
+  where:
+    force: right
+  set: right
+  steps:
+    - import: RightFootContact => foot
+    - vector: [foot.x, foot.y, foot.z]
+    - convert:
+      from: mm
+      to: m
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+
+- parameter: Right_COP_COM_distance
+  where:
+    force: right
+  set: right
+  steps:
+    - import: Right_COP
+      space: VirtualLab
+    - subtract: [PelvisCGPos, $prev]
+    - multiply: [$prev,[-1,1,1]]
+    - if: skip_kinetics_calculation == 0
+      then: $prev
+      else: [[]]
+

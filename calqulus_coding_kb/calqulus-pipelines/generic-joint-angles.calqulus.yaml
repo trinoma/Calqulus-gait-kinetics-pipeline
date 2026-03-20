@@ -1,0 +1,17 @@
+# A pipeline is written in YAML and instructs the Calqulus processing engine what to calculate.
+# In order to process this pipeline, skeleton must be solved in QTM first.
+
+# A pipeline consists of any number of base nodes defined on the root level. 
+
+# Output nodes define an end result that is exported to the global scope and exported in the resulting JSON file.
+# Output node can be 'event' or 'parameter'
+# The main difference between the parameter and event is what type of data is stored. 
+# A parameter node will store series and scalar data, whereas an event node will store event data.
+
+# Space node defines custom coordinate systems. It is useful when orientation of subject changes
+# with regards to the global coordinate system, e.g. walking through lab in both directions.
+
+# Order of nodes is not important. They can be placed anywhere in YAML file.
+
+- template: /templates/generic/generic.calqulus.yaml
+

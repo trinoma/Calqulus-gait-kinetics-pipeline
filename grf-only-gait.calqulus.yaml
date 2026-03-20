@@ -1,0 +1,196 @@
+# GRF-Only Gait Analysis Pipeline
+#
+# Detects gait events and exports ground reaction force using force plate
+# data only — no kinematics or skeleton required.
+#
+# Assumptions:
+#   - ForcePlate1 = right foot, ForcePlate2 = left foot
+#   - Body mass must be set as a session field in QTM (required for BW normalization)
+#   - Event detection uses a fixed 20 N threshold (no body mass dependency)
+#
+# Parameter and event names match the Qualisys web report template:
+#   Left GRF / Right GRF          →  time series GRF plots
+#   LON_force / LOFF_force        →  left gait cycle events
+#   RON_force / ROFF_force        →  right gait cycle events
+
+
+############
+
+## EVENTS ##
+
+############
+- event: BOF
+  steps:
+    - import: [0]
+  
+- event: EOF
+  steps:
+    - subtract: [$length, 1]
+
+ 
+- event: LON
+  steps:
+    - import: LON_force
+
+- event: RON
+  steps:
+    - import: RON_force
+
+
+- event: ROFF
+  steps:
+    - import: ROFF_force
+
+- event: LOFF
+  steps:
+    - import: LOFF_force
+
+# --- Left foot (ForcePlate2) ---
+# Fixed 20 N threshold on low-pass filtered fz.
+# BOF_fixed fallback: if no events found within BOF_fixed..EOF window, fall back to BOF..EOF.
+
+- event: LON_force
+  set: left
+  steps:
+    - import: ForcePlate2.fz
+    - lowpass: $prev
+      cutoff: 50
+    - threshold: $prev
+      value: -20
+      direction: down
+      output: thresholdEvents
+    - eventMask: [thresholdEvents, BOF, EOF]
+      output: force_1
+    - eventMask: [thresholdEvents, BOF, EOF]
+      output: force_2
+
+- event: LOFF_force
+  set: left
+  steps:
+    - import: ForcePlate2.fz
+    - lowpass: $prev
+      cutoff: 50
+    - threshold: $prev
+      value: -20
+      direction: up
+      output: thresholdEvents
+    - eventMask: [thresholdEvents, BOF, EOF]
+      output: force_1
+    - eventMask: [thresholdEvents, BOF, EOF]
+      output: force_2
+    - if: empty(force_1)
+      then: force_2
+      else: force_1
+
+
+# --- Right foot (ForcePlate1) ---
+
+- event: RON_force
+  set: right
+  steps:
+    - import: ForcePlate1.fz
+    - lowpass: $prev
+      cutoff: 50
+    - threshold: $prev
+      value: -20
+      direction: down
+      output: thresholdEvents
+    - eventMask: [thresholdEvents, BOF, EOF]
+      output: force_1
+    - eventMask: [thresholdEvents, BOF, EOF]
+      output: force_2
+    - if: empty(force_1)
+      then: force_2
+      else: force_1
+
+- event: ROFF_force
+  set: right
+  steps:
+    - import: ForcePlate1.fz
+    - lowpass: $prev
+      cutoff: 50
+    - threshold: $prev
+      value: -20
+      direction: up
+      output: thresholdEvents
+    - eventMask: [thresholdEvents, BOF, EOF]
+      output: force_1
+    - eventMask: [thresholdEvents, BOF, EOF]
+      output: force_2
+    - if: empty(force_1)
+      then: force_2
+      else: force_1
+
+
+#####################
+## NORMALIZATION    ##
+#####################
+
+# WARNING: $bodyMass must be set as a session field in QTM before processing.
+# If $bodyMass is zero or unset, the division in Left GRF / Right GRF will
+# produce invalid (Inf / NaN) values. Verify the field is populated for every
+# measurement before running this pipeline.
+#
+# NOTE: BodyWeightNewton is an intermediate computation used only for GRF
+# normalization. It appears in the report JSON as a side-effect of the
+# parameter node scoping rules in Calqulus — it is not a meaningful output.
+- parameter: BodyWeightNewton
+  steps:
+    - multiply: [$bodyMass, 9.81]
+
+
+####################
+## GRF TIME SERIES ##
+####################
+# eventMask annotates the signal with stance cycle pairs (LON → LOFF),
+# which the report uses to normalize the x-axis to 0–100% stance phase.
+
+- parameter: Left GRF
+  set: left
+  steps:
+    - import: [[ForcePlate2.fx, ForcePlate2.fy, ForcePlate2.fz]]
+    - divide: [$prev,BodyWeightNewton]
+    - eventMask: [$prev, LON_force, LOFF_force]
+
+- parameter: Right GRF
+  set: right
+  steps:
+    - import: [[ForcePlate1.fx, ForcePlate1.fy, ForcePlate1.fz]]
+    - divide: [$prev,BodyWeightNewton]
+    - eventMask: [$prev, RON_force, ROFF_force]
+
+
+########################
+## TEMPORAL PARAMETERS ##
+########################
+
+# Stance duration: time from foot on to foot off (seconds)
+- parameter: Left Stance Duration
+  set: left
+  steps:
+    - eventDuration: [LON_force, LOFF_force]
+
+- parameter: Right Stance Duration
+  set: right
+  steps:
+    - eventDuration: [RON_force, ROFF_force]
+
+# Step time: from one foot strike to the opposite foot strike (seconds)
+- parameter: Left to Right Step Time
+  steps:
+    - eventDuration: [LON_force, RON_force]
+
+- parameter: Right to Left Step Time
+  steps:
+    - eventDuration: [RON_force, LON_force]
+
+# Gait cycle time: ipsilateral foot strike to next ipsilateral foot strike (seconds)
+- parameter: Left Cycle Time
+  set: left
+  steps:
+    - eventDuration: [LON_force, LON_force]
+
+- parameter: Right Cycle Time
+  set: right
+  steps:
+    - eventDuration: [RON_force, RON_force]
