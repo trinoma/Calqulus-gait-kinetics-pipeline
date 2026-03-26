@@ -4,7 +4,6 @@
 # data only — no kinematics or skeleton required.
 #
 # Assumptions:
-#   - ForcePlate1 = right foot, ForcePlate2 = left foot
 #   - Body mass must be set as a session field in QTM (required for BW normalization)
 #   - Event detection uses a fixed 20 N threshold (no body mass dependency)
 #
