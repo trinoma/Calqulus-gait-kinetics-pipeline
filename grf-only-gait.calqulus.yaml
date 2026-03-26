@@ -157,4 +157,5 @@
   steps:
     - import: [[ForcePlate1.fx, ForcePlate1.fy, ForcePlate1.fz]]
     - divide: [$prev,BodyWeightNewton]
+    - negate: [$prev]
     - eventMask: [$prev, RON_force, ROFF_force]
