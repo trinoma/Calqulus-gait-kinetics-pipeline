@@ -149,6 +149,7 @@
   steps:
     - import: [[ForcePlate2.fx, ForcePlate2.fy, ForcePlate2.fz]]
     - divide: [$prev,BodyWeightNewton]
+    - negate: [$prev]
     - eventMask: [$prev, LON_force, LOFF_force]
 
 - parameter: Right GRF
