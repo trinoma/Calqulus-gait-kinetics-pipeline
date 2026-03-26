@@ -56,8 +56,8 @@
     - lowpass: $prev
       cutoff: 50
     - threshold: $prev
-      value: -20
-      direction: down
+      value: 20
+      direction: up
       output: thresholdEvents
     - eventMask: [thresholdEvents, BOF, EOF]
       output: force_1
@@ -71,8 +71,8 @@
     - lowpass: $prev
       cutoff: 50
     - threshold: $prev
-      value: -20
-      direction: up
+      value: 20
+      direction: down
       output: thresholdEvents
     - eventMask: [thresholdEvents, BOF, EOF]
       output: force_1
