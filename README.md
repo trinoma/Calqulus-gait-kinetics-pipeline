@@ -8,8 +8,6 @@ A [Calqulus](https://github.com/qualisys/calqulus-pipelines) pipeline for gait a
 grf-only-gait.calqulus.yaml     # Main pipeline file (see below)
 calqulus_coding_kb/
   calqulus-pipelines/           # Reference pipelines (running, cycling, golf, etc.)
-  calqulus-steps/               # Calqulus step documentation and TypeScript source
-  CALQULUS_CODING_REFERENCE.md  # Auto-generated comprehensive reference
 ```
 
 ---
