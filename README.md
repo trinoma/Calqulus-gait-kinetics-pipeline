@@ -52,7 +52,6 @@ For each foot, the pipeline:
 | Parameter | Unit | Description |
 |---|---|---|
 | `Left GRF` / `Right GRF` | BW (body weights) | 3-component GRF (fx, fy, fz) normalized by body weight, segmented by stance cycles |
-| `Left Stance Duration` / `Right Stance Duration` | seconds | Time from foot on to foot off per step |
 
 The GRF time series are annotated with stance cycle pairs (LON→LOFF / RON→ROFF), allowing the Qualisys web report to normalize the x-axis to **0–100% stance phase**.
 
