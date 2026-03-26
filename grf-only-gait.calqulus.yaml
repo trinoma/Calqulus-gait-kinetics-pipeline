@@ -148,7 +148,7 @@
   set: left
   steps:
     - import: [[ForcePlate2.fx, ForcePlate2.fy, ForcePlate2.fz]]
-    - negate: [$prev]
+    - negate: [[ForcePlate2.fx, ForcePlate2.fy, ForcePlate2.fz]]
     - divide: [$prev,BodyWeightNewton]
     - eventMask: [$prev, LON_force, LOFF_force]
 
@@ -156,6 +156,6 @@
   set: right
   steps:
     - import: [[ForcePlate1.fx, ForcePlate1.fy, ForcePlate1.fz]]
-    - negate: [$prev]
+    - negate: [[ForcePlate1.fx, ForcePlate1.fy, ForcePlate1.fz]]
     - divide: [$prev,BodyWeightNewton]
     - eventMask: [$prev, RON_force, ROFF_force]
