@@ -22,7 +22,6 @@ Performs a complete **kinetic gait analysis using force plate data only** — no
 
 | Assumption | Detail |
 |---|---|
-| Force plate assignment | ForcePlate1 = **right foot**, ForcePlate2 = **left foot** |
 | Event detection threshold | Fixed **20 N** on vertical GRF (fz) |
 | Body mass | Must be set as a session field in QTM (`$bodyMass`) — required for BW normalization |
 
