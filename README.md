@@ -59,14 +59,7 @@ The GRF time series are annotated with stance cycle pairs (LON→LOFF / RON→RO
 
 Parameter and event names are aligned with the **Qualisys web report template** for GRF-based gait analysis.
 
----
 
-## Getting Started
-
-1. Open your QTM project and ensure body mass is set as a session field.
-2. Assign force plates in QTM: ForcePlate1 → right, ForcePlate2 → left.
-3. Place `grf-only-gait.calqulus.yaml` in your QTM project's pipeline folder.
-4. Run the Calqulus processing engine.
 
 ## References
 
