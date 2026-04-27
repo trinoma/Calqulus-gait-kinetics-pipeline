@@ -39,6 +39,8 @@ For each foot, the pipeline:
 
 ### Outputs
 
+Kinetics graph of the gait. 
+
 #### Events
 
 | Event | Description |
